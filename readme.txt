@@ -1,3 +1,24 @@
+==== This is NOT my code, I am working from a base of code written by Ryan Holtz (@TheMogMiner) ====
+
+I originally downloaded this from here: https://sites.google.com/site/accodegen/downloads/codegen_src.zip
+
+What I am doing with the code is extending it to automatically find optimal town and player names
+which will minimize the travel distance of all the codes needed for Animal Crossing 100%
+
+I'm going to be using the codes listed in this route:
+https://pastebin.com/kVpwVcep
+as well as this addendum:
+http://pastebin.com/TMyMNJ5P
+
+I'll put those files in this repository for safe keeping as well.
+
+
+
+
+
+Original readme below:
+
+
 Animal Crossing Code Generator v1.7
     by MooglyGuy / UltraMoogleMan
 
@@ -49,7 +70,7 @@ IF A CODE DOES NOT WORK FOR YOU:
        me that "it doesn't work" without including any other info.
        In case nobody has guessed by now, I'm not a psychic, so
        don't act like I am.
-       
+
 You can contact me at zrah2@imail.etsu.edu if necessary.
 
 CHANGELOG:
