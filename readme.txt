@@ -12,6 +12,10 @@ http://pastebin.com/TMyMNJ5P
 
 I'll put those files in this repository for safe keeping as well.
 
+I talked to Zoekay and they told me that the 1.7 version of the C code (which I'm working from) seems to be adding some information to the playername and townname
+As such, the codes come out wrong. I verified in game they do not work. They suggested that I work from the PHP code base, since it has a number of improvements and is
+considered the definitive version. So, next step is trashing all the C code I have in here, ripping out my notes, and starting over with the PHP version.
+
 
 
 

@@ -1,9 +1,12 @@
 //Always starts on !
 //Codes use: #%&*@, 2-9, a-z, A-Z
 Haven't seen a code with a 1 in it, which seems odd but must just be an oddity of this weird encryption method
+Also none with a 0, probably for readability reasons
 
 Can only move strictly left and right, no diagonal
 L and Y maintain cursor position
+No wrapping
+D-pad moves around the text, should be useless for my purposes
 
 
 !?"-~(--)';:(key)

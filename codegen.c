@@ -212,6 +212,8 @@ int main( int argc, char **argv )
   // playername[0] = 33;
   // townname[0] = 33;
 
+  //Seems the codes this is generating to not work. NOOOOO!!!!!
+
 
 
   for(idx2 = 515; idx2 < 525; idx2++) {
