@@ -1,0 +1,25 @@
+//Always starts on !
+//Codes use: #%&*@, 2-9, a-z, A-Z
+Haven't seen a code with a 1 in it, which seems odd but must just be an oddity of this weird encryption method
+
+Can only move strictly left and right, no diagonal
+L and Y maintain cursor position
+
+
+!?"-~(--)';:(key)
+qwertyuiop
+asdfghjkl(\n)
+zxcvbnm,./(space) (R also does a space)
+
+L for caps:
+1234567890
+QWERTYUIOP
+ASDFGHJKL(\n)
+ZXCVBNM,.(space)
+
+Y for punct (from either lower or upper case)
+#?(unused characters)
+%&@ (unused characters)
+(a bunch of unused characters)
+
+Y for icons, unused
