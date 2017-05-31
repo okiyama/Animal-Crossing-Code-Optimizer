@@ -183,8 +183,8 @@ int main( int argc, char **argv )
   unsigned int idx2;
   unsigned int idx3;
 	unsigned char codetype = 'P';
-	unsigned char townname[10] = { 33, 0, 114, 115, 104, 101, 32, 32, 0, 0 };
-	unsigned char playername[10] = { 33, 0, 116, 97, 110, 32, 32, 32, 0, 0 };
+	unsigned char townname[10] = { 33, 32,32,32,32,32,32,32,32,32 };
+	unsigned char playername[10] = { 33, 32,32,32,32,32,32,32,32,32};
 	unsigned char passcode[21];
 	unsigned char finalcode[28];
 	unsigned int itemnum;
