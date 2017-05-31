@@ -1,6 +1,6 @@
-==== This is NOT my code, I am working from a base of code written by Ryan Holtz (@TheMogMiner) ====
+==== This is NOT my code, I am working from a base of code written by Gary Kertopermono who ported their PHP code from a C version originally written by Ryan Holtz (@TheMogMiner) ====
 
-I originally downloaded this from here: https://sites.google.com/site/accodegen/downloads/codegen_src.zip
+The website is available here: http://retrocheater.multiverseworks.com/acuc2/index.php?mod=generator
 
 What I am doing with the code is extending it to automatically find optimal town and player names
 which will minimize the travel distance of all the codes needed for Animal Crossing 100%
@@ -11,8 +11,6 @@ as well as this addendum:
 http://pastebin.com/TMyMNJ5P
 
 I'll put those files in this repository for safe keeping as well.
-
-
 
 
 
