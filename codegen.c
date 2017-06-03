@@ -233,20 +233,6 @@ int main( int argc, char **argv )
 
   init_char_to_location();
 
-
-  //TODO: Figure out how "generate multiple codes" works on the website and backport over here so I can get even more search space
-
-  //Townname and playername can be changed just like this, 0-222 seem valid but I should verify that
-  //It seems the route uses player to player codes
-  //What does "generate multiple codes" on the website do?
-  //Route just uses first value
-  // townname[0] = 33;
-  // playername[0] = 33;
-  //itemnum 8706 == 0x2202 == shovel, code is ZfusV6cTSgsQYd  O53EgAtSsHnk8n for playername and townname 0
-  // playername[0] = 33;
-  // townname[0] = 33;
-
-
   unsigned int minCodeCost = 9999999;
   unsigned int maxCodeCost = 0;
   unsigned int minCost = 9999999;
@@ -262,8 +248,6 @@ int main( int argc, char **argv )
   unsigned char maxTownName = 0;
 
   //0 to 222 for all
-  //TODO: A lot of these characters look like they can't be input ingame, need to check what can actually be used. Probably with a memory viewer.
-  //TODO: This would be much better if it just wrote out all the stats to a CSV, so I could analyze them post facto rather than assuming everything works perfectly
   for(playeridx = 0; playeridx <= 222; playeridx++) {
     playername[0] = playeridx;
     printf("player name: %c, town name: %c\n", playername[0], townname[0]);
@@ -326,7 +310,7 @@ int main( int argc, char **argv )
 
   printf("\n");
 
-  //TODO: Track these player and town names as well, just for fun
+  //TODO: Track these player and town names as well, just for fun - not necessary if I write to CSV, I guess it depends how much I write
   printf("Min code cost: %i\n", minCodeCost);
   for( idx = 0; idx < 14; idx++ )
   {
