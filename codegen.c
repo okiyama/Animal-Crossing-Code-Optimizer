@@ -263,6 +263,7 @@ int main( int argc, char **argv )
 
   //0 to 222 for all
   //TODO: A lot of these characters look like they can't be input ingame, need to check what can actually be used. Probably with a memory viewer.
+  //TODO: This would be much better if it just wrote out all the stats to a CSV, so I could analyze them post facto rather than assuming everything works perfectly
   for(playeridx = 0; playeridx <= 222; playeridx++) {
     playername[0] = playeridx;
     printf("player name: %c, town name: %c\n", playername[0], townname[0]);
