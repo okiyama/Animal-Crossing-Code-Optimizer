@@ -214,13 +214,14 @@ int main( int argc, char **argv )
 	unsigned int idx;
   unsigned int idx2;
   unsigned int idx3;
+  unsigned int playeridx;
+  unsigned int townidx;
 	unsigned char codetype = 0;
 	unsigned char townname[10] = { 33, 32,32,32,32,32,32,32,32,32 };
 	unsigned char playername[10] = { 33, 32,32,32,32,32,32,32,32,32};
 	unsigned char passcode[21];
 	unsigned char finalcode[28];
 	unsigned int itemnum;
-	unsigned int itemCost = 0;
 
 	for( idx = 0; idx < 21; idx++ ) passcode[idx] = 0;
 	for( idx = 0; idx < 28; idx++ ) finalcode[idx] = 0;
@@ -246,68 +247,114 @@ int main( int argc, char **argv )
   // townname[0] = 33;
 
 
-  int minCost = 9999999;
-  int maxCost = 0;
+  unsigned int minCodeCost = 9999999;
+  unsigned int maxCodeCost = 0;
+  unsigned int minCost = 9999999;
+  unsigned int maxCost = 0;
+	unsigned int itemCost = 0;
+  unsigned int playerTownComboCost = 0;
 	unsigned char minCode[28];
 	unsigned char maxCode[28];
-  for(idx2 = 0; idx2 < 1300; idx2++) {
-    for( idx = 0; idx < 21; idx++ ) passcode[idx] = 0;
-  	for( idx = 0; idx < 28; idx++ ) finalcode[idx] = 0;
 
-    itemnum = itemnums[idx2];
-    // printf("%c\n", *playername);
+  unsigned char minPlayerName = 0;
+  unsigned char minTownName = 0;
+  unsigned char maxPlayerName = 0;
+  unsigned char maxTownName = 0;
 
-    // for(idx = 0; idx < 10; idx++) {
-    //   printf("%i ", playername[idx]);
-    // }
-    // printf("\n");
-    // for(idx = 0; idx < 10; idx++) {
-    //   printf("%i ", townname[idx]);
-    // }
-    // printf("\n");
+  //0 to 222 for all
+  for(playeridx = 0; playeridx <= 222; playeridx++) {
+    playername[0] = playeridx;
+    printf("player name: %c, town name: %c\n", playername[0], townname[0]);
 
-    printf("%i\n",itemnum);
+    for(townidx = 0; townidx <= 222; townidx++) {
+      townname[0] = townidx;
+      // printf("player name: %c, town name: %c\n", playername[0], townname[0]);
 
-    mMpswd_make_passcode( passcode, 4, 1, playername, townname, itemnum, 0, codetype );
-    mMpswd_substitution_cipher( passcode );
-    mMpswd_transposition_cipher( passcode, 1, 0 );
-    mMpswd_bit_shuffle( passcode, 0 );
-    mMpswd_chg_RSA_cipher( passcode );
-    mMpswd_bit_mix_code( passcode );
-    mMpswd_bit_shuffle( passcode, 1 );
-    mMpswd_transposition_cipher( passcode, 0, 1 );
-    mMpswd_chg_6bits_code( finalcode, passcode );
-    mMpswd_chg_common_font_code( finalcode );
+      //< 1300 for all
+      for(idx2 = 0; idx2 < 1300; idx2++) {
+        for( idx = 0; idx < 21; idx++ ) passcode[idx] = 0;
+      	for( idx = 0; idx < 28; idx++ ) finalcode[idx] = 0;
 
-    itemCost = calculate_item_cost(finalcode);
-    if(itemCost < minCost) {
-      minCost = itemCost;
-      strcpy(minCode, finalcode);
+        itemnum = itemnums[idx2];
+        // printf("%c\n", *playername);
+
+        // for(idx = 0; idx < 10; idx++) {
+        //   printf("%i ", playername[idx]);
+        // }
+        // printf("\n");
+        // for(idx = 0; idx < 10; idx++) {
+        //   printf("%i ", townname[idx]);
+        // }
+        // printf("\n");
+
+        // printf("%i\n",itemnum);
+
+        mMpswd_make_passcode( passcode, 4, 1, playername, townname, itemnum, 0, codetype );
+        mMpswd_substitution_cipher( passcode );
+        mMpswd_transposition_cipher( passcode, 1, 0 );
+        mMpswd_bit_shuffle( passcode, 0 );
+        mMpswd_chg_RSA_cipher( passcode );
+        mMpswd_bit_mix_code( passcode );
+        mMpswd_bit_shuffle( passcode, 1 );
+        mMpswd_transposition_cipher( passcode, 0, 1 );
+        mMpswd_chg_6bits_code( finalcode, passcode );
+        mMpswd_chg_common_font_code( finalcode );
+
+        itemCost = calculate_item_cost(finalcode);
+        playerTownComboCost += itemCost;
+        if(itemCost < minCodeCost) {
+          minCodeCost = itemCost;
+          strcpy(minCode, finalcode);
+        }
+        if(itemCost > maxCodeCost) {
+          maxCodeCost = itemCost;
+          strcpy(maxCode, finalcode);
+        }
+
+        // printf( "\n" );
+
+      	// for( idx = 0; idx < 14; idx++ )
+      	// {
+      	// 	printf( "%c", finalcode[idx] );
+      	// }
+        //
+      	// printf( "\n" );
+        //
+      	// for( idx = 14; idx < 28; idx++ )
+      	// {
+      	// 	printf( "%c", finalcode[idx] );
+      	// }
+        //
+        // printf( "\n\n" );
+      }
     }
-    if(itemCost > maxCost) {
-      maxCost = itemCost;
-      strcpy(maxCode, finalcode);
+
+    if(playerTownComboCost < minCost) {
+      minCost = playerTownComboCost;
+      minPlayerName = playername[0];
+      minTownName = townname[0];
     }
-    printf("cost: %i\n", itemCost);
+    if(playerTownComboCost > maxCost) {
+      maxCost = playerTownComboCost;
+      maxPlayerName = playername[0];
+      maxTownName = townname[0];
+    }
 
-    // printf( "\n" );
-
-  	for( idx = 0; idx < 14; idx++ )
-  	{
-  		printf( "%c", finalcode[idx] );
-  	}
-
-  	printf( "\n" );
-
-  	for( idx = 14; idx < 28; idx++ )
-  	{
-  		printf( "%c", finalcode[idx] );
-  	}
-
-    printf( "\n\n" );
+    playerTownComboCost = 0;
   }
 
-  printf("Min cost: %i\n", minCost);
+  printf("\n");
+
+  printf("Min player name: %c, int: %d, cost: %d\n", minPlayerName, minPlayerName, minCost);
+  printf("Min town name: %c, int: %d, cost: %d\n\n", minTownName, minTownName, minCost);
+
+  printf("Max player name: %c, int: %d, cost: %d\n", maxPlayerName, maxPlayerName, maxCost);
+  printf("Max town name: %c, int: %d, cost: %d\n", maxTownName, maxTownName, maxCost);
+
+  printf("\n");
+
+  //TODO: Track these player and town names as well, just for fun
+  printf("Min code cost: %i\n", minCodeCost);
   for( idx = 0; idx < 14; idx++ )
   {
     printf( "%c", minCode[idx] );
@@ -320,7 +367,7 @@ int main( int argc, char **argv )
 
   printf( "\n\n" );
 
-  printf("Max cost: %i\n", maxCost);
+  printf("Max code cost: %i\n", maxCodeCost);
   for( idx = 0; idx < 14; idx++ )
   {
     printf( "%c", maxCode[idx] );
