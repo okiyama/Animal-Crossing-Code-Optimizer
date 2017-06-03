@@ -262,13 +262,13 @@ int main( int argc, char **argv )
   unsigned char maxTownName = 0;
 
   //0 to 222 for all
+  //TODO: A lot of these characters look like they can't be input ingame, need to check what can actually be used. Probably with a memory viewer.
   for(playeridx = 0; playeridx <= 222; playeridx++) {
     playername[0] = playeridx;
     printf("player name: %c, town name: %c\n", playername[0], townname[0]);
 
     for(townidx = 0; townidx <= 222; townidx++) {
       townname[0] = townidx;
-      // printf("player name: %c, town name: %c\n", playername[0], townname[0]);
 
       //< 1300 for all
       for(idx2 = 0; idx2 < 1300; idx2++) {
@@ -276,18 +276,6 @@ int main( int argc, char **argv )
       	for( idx = 0; idx < 28; idx++ ) finalcode[idx] = 0;
 
         itemnum = itemnums[idx2];
-        // printf("%c\n", *playername);
-
-        // for(idx = 0; idx < 10; idx++) {
-        //   printf("%i ", playername[idx]);
-        // }
-        // printf("\n");
-        // for(idx = 0; idx < 10; idx++) {
-        //   printf("%i ", townname[idx]);
-        // }
-        // printf("\n");
-
-        // printf("%i\n",itemnum);
 
         mMpswd_make_passcode( passcode, 4, 1, playername, townname, itemnum, 0, codetype );
         mMpswd_substitution_cipher( passcode );
@@ -310,22 +298,6 @@ int main( int argc, char **argv )
           maxCodeCost = itemCost;
           strcpy(maxCode, finalcode);
         }
-
-        // printf( "\n" );
-
-      	// for( idx = 0; idx < 14; idx++ )
-      	// {
-      	// 	printf( "%c", finalcode[idx] );
-      	// }
-        //
-      	// printf( "\n" );
-        //
-      	// for( idx = 14; idx < 28; idx++ )
-      	// {
-      	// 	printf( "%c", finalcode[idx] );
-      	// }
-        //
-        // printf( "\n\n" );
       }
     }
 
@@ -1162,6 +1134,10 @@ void init_char_to_location()
   char_to_location['@'] = punct_at;
 }
 
+/**
+ * Calculates how many button inputs are necessary to input the given code.
+ * Assumes moving the cursor is just as time consuming as swapping keyboards, which may not be true and may be changed later after some experimentation.
+ */
 unsigned int calculate_item_cost( unsigned char* finalcode)
 {
   unsigned int cost = 0;
