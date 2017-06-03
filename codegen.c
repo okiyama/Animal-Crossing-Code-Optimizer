@@ -18,6 +18,8 @@ void mMpswd_bit_reverse( unsigned char* );
 void mMpswd_chg_6bits_code( unsigned char*, unsigned char* );
 void mMpswd_chg_common_font_code( unsigned char* );
 unsigned int hex2dec( unsigned char* );
+void init_char_to_location();
+unsigned int calculate_item_cost( unsigned char* );
 
 unsigned char usable_to_fontnum[64] = {
 	0x62, 0x4b, 0x7a, 0x35, 0x63, 0x71, 0x59, 0x5a,
@@ -166,6 +168,36 @@ unsigned char chg_len[32] = {
 
 unsigned int key_idx[2] = { 0x00000012, 0x00000009 };
 
+
+//TODO: This is actually backwards. What I want is a way to give a character and get out an x, y, keyboard(z) co-ordinate that I can then take distance of
+// unsigned char small_keyboard[10][4] =
+//   {  0,   0,   0,   0,   0,   0,   0,   0,   0,   0 }, //Never use top row of small
+//   { 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'},
+//   { 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l',  0 },
+//   { 'z', 'x', 'c', 'v', 'b', 'n', 'm',  0,   0,   0 };
+//
+// unsigned char big_keyboard[10][4] =
+//     {  0,  '2', '3', '4', '5', '6', '7', '8', '9',  0 },
+//     { 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'},
+//     { 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L',  0 },
+//     { 'Z', 'X', 'C', 'V', 'B', 'N', 'M',  0,   0,   0 };
+//
+// unsigned char punct_keyboard[10][4] =
+//     { '#',  0,   0,   0,   0,   0,   0,   0,   0,   0},
+//     { '%', '&', '@',  0,   0,   0,   0,   0,   0,   0},
+//     {  0,   0,   0,   0,   0,   0,   0,   0,   0,   0},
+//     {  0,   0,   0,   0,   0,   0,   0,   0,   0,   0};
+
+typedef enum {SMALL, BIG, PUNCT} keyboard;
+
+typedef struct {
+  int x;
+  int y;
+  keyboard k;
+} keyboard_location;
+
+keyboard_location *char_to_location;
+
 void DisplayCode( unsigned char *cCode, int nNumChars )
 {
     int idx;
@@ -182,23 +214,24 @@ int main( int argc, char **argv )
 	unsigned int idx;
   unsigned int idx2;
   unsigned int idx3;
-	unsigned char codetype = 'P';
+	unsigned char codetype = 0;
 	unsigned char townname[10] = { 33, 32,32,32,32,32,32,32,32,32 };
 	unsigned char playername[10] = { 33, 32,32,32,32,32,32,32,32,32};
 	unsigned char passcode[21];
 	unsigned char finalcode[28];
 	unsigned int itemnum;
+	unsigned int itemCost = 0;
 
 	for( idx = 0; idx < 21; idx++ ) passcode[idx] = 0;
 	for( idx = 0; idx < 28; idx++ ) finalcode[idx] = 0;
 
+  //This will be pared down when I determine which codes the speedrun uses
   unsigned int itemnums[1300] = {
     2304, 4096, 4100, 4104, 4108, 4112, 4116, 4120, 4124, 4128, 4132, 4136, 4140, 4144, 4148, 4152, 4156, 4160, 4164, 4168, 4172, 4176, 4180, 4184, 4188, 4192, 4196, 4200, 4204, 4208, 4212, 4216, 4232, 4256, 4260, 4264, 4268, 4280, 4284, 4292, 4296, 4312, 4316, 4320, 4324, 4328, 4332, 4336, 4340, 4344, 4348, 4352, 4356, 4360, 4364, 4368, 4372, 4376, 4380, 4384, 4388, 4392, 4396, 4400, 4404, 4408, 4412, 4416, 4420, 4424, 4428, 4432, 4436, 4440, 4444, 4448, 4452, 4456, 4460, 4464, 4468, 4472, 4476, 4480, 4484, 4488, 4492, 4496, 4500, 4504, 4508, 4512, 4516, 4520, 4524, 4528, 4532, 4536, 4540, 4544, 4548, 4552, 4556, 4560, 4564, 4568, 4572, 4576, 4580, 4584, 4588, 4592, 4596, 4604, 4608, 4620, 4624, 4628, 4632, 4636, 4648, 4652, 4656, 4660, 4664, 4668, 4684, 4692, 4696, 4700, 4704, 4708, 4712, 4716, 4720, 4724, 4728, 4732, 4736, 4740, 4744, 4748, 4752, 4756, 4760, 4764, 4768, 4772, 4776, 4780, 4784, 4788, 4792, 4796, 4800, 4804, 4808, 4812, 4816, 4820, 4824, 4828, 4832, 4836, 4840, 4844, 4852, 4856, 4860, 4864, 4868, 4872, 4876, 4880, 4888, 4892, 4896, 4900, 4904, 4908, 4912, 4916, 4920, 4924, 4928, 4936, 4940, 4944, 4948, 4952, 4956, 4960, 4964, 4968, 4972, 4976, 4980, 4984, 4988, 4992, 4996, 5000, 5004, 5008, 5012, 5016, 5020, 5024, 5028, 5032, 5036, 5040, 5044, 5048, 5052, 5056, 5060, 5064, 5068, 5072, 5076, 5080, 5084, 5088, 5092, 5096, 5100, 5104, 5108, 5124, 5128, 5132, 5136, 5140, 5148, 5156, 5160, 5164, 5184, 5188, 5192, 5200, 5212, 5216, 5224, 5228, 5232, 5240, 5244, 5248, 5252, 5256, 5260, 5268, 5276, 5284, 5288, 5292, 5312, 5316, 5320, 5328, 5332, 5336, 5340, 5344, 5348, 5352, 5356, 5360, 5364, 5368, 5372, 5376, 5380, 5384, 5388, 5392, 5396, 5400, 5404, 5412, 5424, 5428, 5432, 5436, 5440, 5444, 5448, 5460, 5464, 5468, 5472, 5480, 5484, 5488, 5496, 5500, 5504, 5508, 5512, 5516, 5520, 5532, 5536, 5540, 5544, 5548, 5694, 5719, 5917, 7592, 7596, 7600, 7604, 7608, 7612, 7616, 7620, 7624, 7628, 7632, 7636, 7640, 7644, 7648, 7652, 7656, 7660, 7664, 7668, 7672, 7676, 7680, 7684, 7688, 7692, 7696, 7700, 7704, 7708, 7712, 7716, 7720, 7724, 7728, 7732, 7736, 7740, 7744, 7748, 7752, 7756, 7760, 7764, 7768, 7772, 7776, 7780, 7784, 7788, 7792, 7804, 7816, 7820, 7824, 7828, 7832, 7836, 7840, 7844, 7848, 7852, 7856, 7860, 7864, 7868, 7872, 7876, 7880, 7884, 7888, 7892, 7896, 7900, 7904, 7908, 7912, 7916, 7920, 7924, 7928, 7932, 7936, 7940, 7944, 7948, 7952, 7956, 7960, 7964, 7968, 7972, 7976, 7980, 7984, 7988, 7992, 7996, 8000, 8004, 8008, 8012, 8016, 8020, 8024, 8028, 8032, 8036, 8040, 8044, 8048, 8052, 8056, 8092, 8096, 8100, 8104, 8108, 8112, 8116, 8120, 8128, 8132, 8136, 8140, 8144, 8148, 8152, 8156, 8160, 8164, 8168, 8172, 8176, 8180, 8184, 8188, 8192, 8196, 8200, 8204, 8208, 8212, 8216, 8220, 8224, 8228, 8232, 8236, 8240, 8244, 8248, 8252, 8256, 8260, 8264, 8268, 8272, 8276, 8280, 8284, 8288, 8292, 8296, 8300, 8304, 8308, 8312, 8316, 8320, 8324, 8328, 8332, 8336, 8340, 8344, 8348, 8352, 8356, 8360, 8364, 8368, 8372, 8376, 8380, 8384, 8388, 8392, 8396, 8400, 8404, 8408, 8412, 8416, 8420, 8424, 8428, 8432, 8436, 8440, 8444, 8448, 8449, 8450, 8451, 8704, 8705, 8706, 8707, 8708, 8709, 8710, 8711, 8712, 8713, 8714, 8715, 8716, 8717, 8718, 8719, 8720, 8721, 8722, 8723, 8724, 8725, 8726, 8727, 8728, 8729, 8730, 8731, 8732, 8733, 8734, 8735, 8736, 8737, 8738, 8739, 8740, 8772, 8773, 8774, 8775, 8776, 8777, 8778, 8779, 8780, 8781, 8782, 8783, 8784, 8785, 8786, 8787, 8788, 8789, 8790, 8791, 8792, 8793, 8794, 8795, 9216, 9217, 9218, 9219, 9220, 9221, 9222, 9223, 9224, 9225, 9226, 9227, 9228, 9229, 9230, 9231, 9232, 9233, 9234, 9235, 9236, 9237, 9238, 9239, 9240, 9241, 9242, 9243, 9244, 9245, 9246, 9247, 9248, 9249, 9250, 9251, 9252, 9253, 9254, 9255, 9256, 9257, 9258, 9259, 9260, 9261, 9262, 9263, 9264, 9265, 9266, 9267, 9268, 9269, 9270, 9271, 9272, 9273, 9274, 9275, 9276, 9277, 9278, 9279, 9280, 9281, 9282, 9283, 9284, 9285, 9286, 9287, 9288, 9289, 9290, 9291, 9292, 9293, 9294, 9295, 9296, 9297, 9298, 9299, 9300, 9301, 9302, 9303, 9304, 9305, 9306, 9307, 9308, 9309, 9310, 9311, 9312, 9313, 9314, 9315, 9316, 9317, 9318, 9319, 9320, 9321, 9322, 9323, 9324, 9325, 9326, 9327, 9328, 9329, 9330, 9331, 9332, 9333, 9334, 9335, 9336, 9337, 9338, 9339, 9340, 9341, 9342, 9343, 9344, 9345, 9346, 9347, 9348, 9349, 9350, 9351, 9352, 9353, 9354, 9355, 9356, 9357, 9358, 9359, 9360, 9361, 9362, 9363, 9364, 9365, 9366, 9367, 9368, 9369, 9370, 9371, 9372, 9373, 9374, 9375, 9376, 9377, 9378, 9379, 9380, 9381, 9382, 9383, 9384, 9385, 9386, 9387, 9388, 9389, 9390, 9391, 9392, 9393, 9394, 9395, 9396, 9397, 9398, 9399, 9400, 9401, 9402, 9403, 9404, 9405, 9406, 9407, 9408, 9409, 9410, 9411, 9412, 9413, 9414, 9415, 9416, 9417, 9418, 9419, 9420, 9421, 9422, 9423, 9424, 9425, 9426, 9427, 9428, 9429, 9430, 9431, 9432, 9433, 9434, 9435, 9436, 9437, 9438, 9439, 9440, 9441, 9442, 9443, 9444, 9445, 9446, 9447, 9448, 9449, 9450, 9451, 9452, 9453, 9454, 9455, 9456, 9457, 9458, 9459, 9460, 9461, 9462, 9463, 9464, 9465, 9466, 9467, 9468, 9469, 9470, 9484, 9485, 9486, 9487, 9488, 9489, 9490, 9491, 9517, 9728, 9729, 9730, 9731, 9732, 9733, 9734, 9735, 9736, 9737, 9738, 9739, 9740, 9741, 9742, 9743, 9744, 9745, 9746, 9747, 9748, 9749, 9750, 9751, 9752, 9753, 9754, 9755, 9756, 9757, 9758, 9759, 9760, 9761, 9762, 9763, 9764, 9765, 9766, 9767, 9768, 9769, 9770, 9771, 9772, 9773, 9774, 9775, 9776, 9777, 9778, 9779, 9780, 9781, 9782, 9783, 9784, 9785, 9786, 9787, 9788, 9789, 9790, 9791, 9792, 9793, 9794, 9984, 9985, 9986, 9987, 9988, 9989, 9990, 9991, 9992, 9993, 9994, 9995, 9996, 9997, 9998, 9999, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009, 10010, 10011, 10012, 10013, 10014, 10015, 10016, 10017, 10018, 10019, 10020, 10021, 10022, 10023, 10024, 10025, 10026, 10027, 10028, 10029, 10030, 10031, 10032, 10033, 10034, 10034, 10036, 10037, 10038, 10039, 10040, 10041, 10042, 10043, 10044, 10045, 10046, 10047, 10048, 10049, 10050, 10240, 10241, 10242, 10243, 10244, 10245, 10246, 10247, 10496, 10497, 10498, 10499, 10500, 10501, 10502, 10503, 10504, 10505, 10506, 10752, 10753, 10754, 10755, 10756, 10757, 10758, 10759, 10760, 10761, 10762, 10763, 10764, 10765, 10766, 10767, 10768, 10769, 10770, 10771, 10772, 10773, 10774, 10775, 10776, 10777, 10778, 10779, 10780, 10781, 10782, 10783, 10784, 10785, 10786, 10787, 10788, 10789, 10790, 10791, 10792, 10793, 10794, 10795, 10796, 10797, 10798, 10799, 10800, 10801, 10802, 10803, 10804, 10805, 10806, 11008, 11009, 11010, 11011, 11012, 11013, 11014, 11015, 11016, 11017, 11018, 11019, 11020, 11021, 11022, 11023, 11264, 11776, 11777, 12032, 12033, 12034, 12035, 12288, 12292, 12296, 12300, 12304, 12308, 12312, 12316, 12320, 12324, 12328, 12332, 12336, 12340, 12356, 12360, 12364, 12368, 12372, 12384, 12388, 12400, 12404, 12408, 12412, 12416, 12420, 12424, 12432, 12436, 12444, 12448, 12452, 12456, 12460, 12464, 12468, 12472, 12476, 12480, 12484, 12488, 12492, 12496, 12500, 12504, 12508, 12512, 12516, 12520, 12524, 12528, 12532, 12536, 12540, 12544, 12548, 12552, 12556, 12560, 12564, 12568, 12572, 12576, 12580, 12584, 12588, 12592, 12596, 12600, 12604, 12608, 12612, 12616, 12620, 12624, 12628, 12632, 12636, 12640, 12644, 12648, 12652, 12656, 12660, 12664, 12668, 12672, 12676, 12680, 12684, 12688, 12692, 12696, 12700, 12704, 12708, 12712, 12716, 12720, 12724, 12728, 12732, 12736, 12740, 12744, 12748, 12752, 12756, 12768, 12772, 12776, 12780, 12784, 12788, 12792, 12796, 12800, 12804, 12808, 12812, 12816, 12820, 12824, 12832, 12836, 12844, 12852, 12856, 12860, 12864, 12868, 12872, 12876, 12880, 12884, 12888, 12892, 12896, 12900, 12904, 12908, 12912, 12916, 12920, 12924, 12928, 12932, 12936, 12940, 12944, 12948, 12952, 12956, 12960, 12964, 12968, 12972, 12976, 12980, 12984, 12988, 12992, 12996, 13000, 13004, 13008, 13012, 13016, 13020, 13024, 13028, 13032, 13036, 13040, 13044, 13048, 13052, 13056, 13060, 13064, 13068, 13072, 13076, 13080, 13084, 13088, 13092, 13094, 13096, 13100, 13104, 13108, 13112, 13116, 13120, 13124, 13128, 13132, 13136, 13140, 13144, 13148, 13152, 13156, 13160, 13164, 13168, 13172, 13176, 13180, 13184, 13188, 13192, 13196, 13200, 13204, 13208, 13212, 13216, 13220, 13224, 13228, 13232, 13236, 13240, 13244, 13248
   };
 
-  //TODO: The codes this generates don't match the PHP version. Why?
-  //It seems the website uses v1.5 of the code generator, not version 1.7 like I have here
-  //I'm assuming that either one would work, so maybe I should check both?
+  init_char_to_location();
+
 
   //TODO: Figure out how "generate multiple codes" works on the website and backport over here so I can get even more search space
 
@@ -208,15 +241,16 @@ int main( int argc, char **argv )
   //Route just uses first value
   // townname[0] = 33;
   // playername[0] = 33;
-  //itemnum 8706 == 0x2202 == shovel, code is ZfusV6cTSgsQYd  O53EgAtSsHnk8n for playername and townname '!'
+  //itemnum 8706 == 0x2202 == shovel, code is ZfusV6cTSgsQYd  O53EgAtSsHnk8n for playername and townname 0
   // playername[0] = 33;
   // townname[0] = 33;
 
-  //Seems the codes this is generating to not work. NOOOOO!!!!!
 
-
-
-  for(idx2 = 515; idx2 < 525; idx2++) {
+  int minCost = 9999999;
+  int maxCost = 0;
+	unsigned char minCode[28];
+	unsigned char maxCode[28];
+  for(idx2 = 0; idx2 < 1300; idx2++) {
     for( idx = 0; idx < 21; idx++ ) passcode[idx] = 0;
   	for( idx = 0; idx < 28; idx++ ) finalcode[idx] = 0;
 
@@ -245,7 +279,18 @@ int main( int argc, char **argv )
     mMpswd_chg_6bits_code( finalcode, passcode );
     mMpswd_chg_common_font_code( finalcode );
 
-    printf( "\n" );
+    itemCost = calculate_item_cost(finalcode);
+    if(itemCost < minCost) {
+      minCost = itemCost;
+      strcpy(minCode, finalcode);
+    }
+    if(itemCost > maxCost) {
+      maxCost = itemCost;
+      strcpy(maxCode, finalcode);
+    }
+    printf("cost: %i\n", itemCost);
+
+    // printf( "\n" );
 
   	for( idx = 0; idx < 14; idx++ )
   	{
@@ -259,7 +304,31 @@ int main( int argc, char **argv )
   		printf( "%c", finalcode[idx] );
   	}
 
-    printf( "\n" );
+    printf( "\n\n" );
+  }
+
+  printf("Min cost: %i\n", minCost);
+  for( idx = 0; idx < 14; idx++ )
+  {
+    printf( "%c", minCode[idx] );
+  }
+  printf( "\n" );
+  for( idx = 14; idx < 28; idx++ )
+  {
+    printf( "%c", minCode[idx] );
+  }
+
+  printf( "\n\n" );
+
+  printf("Max cost: %i\n", maxCost);
+  for( idx = 0; idx < 14; idx++ )
+  {
+    printf( "%c", maxCode[idx] );
+  }
+  printf( "\n" );
+  for( idx = 14; idx < 28; idx++ )
+  {
+    printf( "%c", maxCode[idx] );
   }
 
 	printf( "\n" );
@@ -870,8 +939,8 @@ unsigned int hex2dec( unsigned char* numstr )
 	unsigned int finalval = 0;
 	unsigned char tempstr[5];
 	unsigned char convbytes[16] = {
-		'0', '1', '2', '3', '4', '5', '6', '7',
-		'8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+               '0', '1', '2', '3', '4', '5', '6', '7',
+               '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
 	for( idx = 0; idx < 4; idx++ )
 	{
@@ -901,4 +970,197 @@ unsigned int hex2dec( unsigned char* numstr )
 		multiplier *= 16;
 	}
 	return finalval;
+}
+
+/**
+ * Initializes the char_to_location array. This array indexes with passcode characters and returns their keyboard location
+ * It a'int pretty, but it'll do
+ */
+void init_char_to_location()
+{
+  char_to_location = malloc(123 * (sizeof (keyboard_location)));
+
+  keyboard_location small_q = { .x = 0, .y = 1, .k = SMALL};
+  keyboard_location small_w = { .x = 1, .y = 1, .k = SMALL};
+  keyboard_location small_e = { .x = 2, .y = 1, .k = SMALL};
+  keyboard_location small_r = { .x = 3, .y = 1, .k = SMALL};
+  keyboard_location small_tee = { .x = 4, .y = 1, .k = SMALL};
+  keyboard_location small_y = { .x = 5, .y = 1, .k = SMALL};
+  keyboard_location small_u = { .x = 6, .y = 1, .k = SMALL};
+  keyboard_location small_i = { .x = 7, .y = 1, .k = SMALL};
+  keyboard_location small_o = { .x = 8, .y = 1, .k = SMALL};
+  keyboard_location small_p = { .x = 9, .y = 1, .k = SMALL};
+  keyboard_location small_a = { .x = 0, .y = 2, .k = SMALL};
+  keyboard_location small_s = { .x = 1, .y = 2, .k = SMALL};
+  keyboard_location small_d = { .x = 2, .y = 2, .k = SMALL};
+  keyboard_location small_f = { .x = 3, .y = 2, .k = SMALL};
+  keyboard_location small_g = { .x = 4, .y = 2, .k = SMALL};
+  keyboard_location small_h = { .x = 5, .y = 2, .k = SMALL};
+  keyboard_location small_j = { .x = 6, .y = 2, .k = SMALL};
+  keyboard_location small_k = { .x = 7, .y = 2, .k = SMALL};
+  keyboard_location small_l = { .x = 8, .y = 2, .k = SMALL};
+  keyboard_location small_z = { .x = 0, .y = 3, .k = SMALL};
+  keyboard_location small_x = { .x = 1, .y = 3, .k = SMALL};
+  keyboard_location small_c = { .x = 2, .y = 3, .k = SMALL};
+  keyboard_location small_v = { .x = 3, .y = 3, .k = SMALL};
+  keyboard_location small_b = { .x = 4, .y = 3, .k = SMALL};
+  keyboard_location small_n = { .x = 5, .y = 3, .k = SMALL};
+  keyboard_location small_m = { .x = 6, .y = 3, .k = SMALL};
+
+  keyboard_location big_2 = { .x = 1, .y = 0, .k = BIG};
+  keyboard_location big_3 = { .x = 2, .y = 0, .k = BIG};
+  keyboard_location big_4 = { .x = 3, .y = 0, .k = BIG};
+  keyboard_location big_5 = { .x = 4, .y = 0, .k = BIG};
+  keyboard_location big_6 = { .x = 5, .y = 0, .k = BIG};
+  keyboard_location big_7 = { .x = 6, .y = 0, .k = BIG};
+  keyboard_location big_8 = { .x = 7, .y = 0, .k = BIG};
+  keyboard_location big_9 = { .x = 8, .y = 0, .k = BIG};
+  keyboard_location big_q = { .x = 0, .y = 1, .k = BIG};
+  keyboard_location big_w = { .x = 1, .y = 1, .k = BIG};
+  keyboard_location big_e = { .x = 2, .y = 1, .k = BIG};
+  keyboard_location big_r = { .x = 3, .y = 1, .k = BIG};
+  keyboard_location big_tee = { .x = 4, .y = 1, .k = BIG};
+  keyboard_location big_y = { .x = 5, .y = 1, .k = BIG};
+  keyboard_location big_u = { .x = 6, .y = 1, .k = BIG};
+  keyboard_location big_i = { .x = 7, .y = 1, .k = BIG};
+  keyboard_location big_o = { .x = 8, .y = 1, .k = BIG};
+  keyboard_location big_p = { .x = 9, .y = 1, .k = BIG};
+  keyboard_location big_a = { .x = 0, .y = 2, .k = BIG};
+  keyboard_location big_s = { .x = 1, .y = 2, .k = BIG};
+  keyboard_location big_d = { .x = 2, .y = 2, .k = BIG};
+  keyboard_location big_f = { .x = 3, .y = 2, .k = BIG};
+  keyboard_location big_g = { .x = 4, .y = 2, .k = BIG};
+  keyboard_location big_h = { .x = 5, .y = 2, .k = BIG};
+  keyboard_location big_j = { .x = 6, .y = 2, .k = BIG};
+  keyboard_location big_k = { .x = 7, .y = 2, .k = BIG};
+  keyboard_location big_l = { .x = 8, .y = 2, .k = BIG};
+  keyboard_location big_z = { .x = 0, .y = 3, .k = BIG};
+  keyboard_location big_x = { .x = 1, .y = 3, .k = BIG};
+  keyboard_location big_c = { .x = 2, .y = 3, .k = BIG};
+  keyboard_location big_v = { .x = 3, .y = 3, .k = BIG};
+  keyboard_location big_b = { .x = 4, .y = 3, .k = BIG};
+  keyboard_location big_n = { .x = 5, .y = 3, .k = BIG};
+  keyboard_location big_m = { .x = 6, .y = 3, .k = BIG};
+
+  keyboard_location punct_pound =   { .x = 0, .y = 0, .k = PUNCT};
+  keyboard_location punct_percent = { .x = 0, .y = 1, .k = PUNCT};
+  keyboard_location punct_and =     { .x = 1, .y = 1, .k = PUNCT};
+  keyboard_location punct_at =      { .x = 2, .y = 1, .k = PUNCT};
+
+  char_to_location['q'] = small_q;
+  char_to_location['w'] = small_w;
+  char_to_location['e'] = small_e;
+  char_to_location['r'] = small_r;
+  char_to_location['t'] = small_tee;
+  char_to_location['y'] = small_y;
+  char_to_location['u'] = small_u;
+  char_to_location['i'] = small_i;
+  char_to_location['o'] = small_o;
+  char_to_location['p'] = small_p;
+  char_to_location['a'] = small_a;
+  char_to_location['s'] = small_s;
+  char_to_location['d'] = small_d;
+  char_to_location['f'] = small_f;
+  char_to_location['g'] = small_g;
+  char_to_location['h'] = small_h;
+  char_to_location['j'] = small_j;
+  char_to_location['k'] = small_k;
+  char_to_location['l'] = small_l;
+  char_to_location['z'] = small_z;
+  char_to_location['x'] = small_x;
+  char_to_location['c'] = small_c;
+  char_to_location['v'] = small_v;
+  char_to_location['b'] = small_b;
+  char_to_location['n'] = small_n;
+  char_to_location['m'] = small_m;
+
+  char_to_location['2'] = big_2;
+  char_to_location['3'] = big_3;
+  char_to_location['4'] = big_4;
+  char_to_location['5'] = big_5;
+  char_to_location['6'] = big_6;
+  char_to_location['7'] = big_7;
+  char_to_location['8'] = big_8;
+  char_to_location['9'] = big_9;
+  char_to_location['Q'] = big_q;
+  char_to_location['W'] = big_w;
+  char_to_location['E'] = big_e;
+  char_to_location['R'] = big_r;
+  char_to_location['T'] = big_tee;
+  char_to_location['Y'] = big_y;
+  char_to_location['U'] = big_u;
+  char_to_location['I'] = big_i;
+  char_to_location['O'] = big_o;
+  char_to_location['P'] = big_p;
+  char_to_location['A'] = big_a;
+  char_to_location['S'] = big_s;
+  char_to_location['D'] = big_d;
+  char_to_location['F'] = big_f;
+  char_to_location['G'] = big_g;
+  char_to_location['H'] = big_h;
+  char_to_location['J'] = big_j;
+  char_to_location['K'] = big_k;
+  char_to_location['L'] = big_l;
+  char_to_location['Z'] = big_z;
+  char_to_location['X'] = big_x;
+  char_to_location['C'] = big_c;
+  char_to_location['V'] = big_v;
+  char_to_location['B'] = big_b;
+  char_to_location['N'] = big_n;
+  char_to_location['M'] = big_m;
+
+  char_to_location['#'] = punct_pound;
+  char_to_location['%'] = punct_percent;
+  char_to_location['&'] = punct_and;
+  char_to_location['@'] = punct_at;
+}
+
+unsigned int calculate_item_cost( unsigned char* finalcode)
+{
+  unsigned int cost = 0;
+  unsigned int i = 0;
+  keyboard_location curr_location = { .x = 0, .y = 0, .k = SMALL };
+
+  for(i = 0; i < 28; i++) {
+    keyboard_location destination = char_to_location[finalcode[i]];
+    // printf("curr location: %i, %i, %i\n", curr_location.x, curr_location.y, curr_location.k);
+    // printf("destination: %i, %i, %i\n", destination.x, destination.y, destination.k);
+
+    cost += abs(destination.x - curr_location.x);
+    cost += abs(destination.y - curr_location.y);
+
+    //TODO: This can be compressed
+    if(destination.k != curr_location.k) {
+      switch(curr_location.k) {
+        case SMALL:
+          switch(destination.k) {
+            case BIG:
+            case PUNCT:
+              cost += 1;
+              break;
+          }
+          break;
+        case BIG:
+          switch(destination.k) {
+            case SMALL:
+            case PUNCT:
+              cost += 1;
+              break;
+          }
+          break;
+        case PUNCT:
+          switch(destination.k) {
+            case SMALL:
+            case BIG:
+              cost += 2;
+              break;
+          }
+          break;
+      }
+    }
+
+    curr_location = char_to_location[finalcode[i]];
+  }
+
+  return cost;
 }
