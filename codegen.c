@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 void mMpswd_make_passcode( unsigned char*, unsigned int, unsigned int, unsigned char*,
                            unsigned char*, unsigned int, unsigned int, unsigned char );
@@ -233,9 +234,9 @@ int main( int argc, char **argv )
 
   init_char_to_location();
 
-  unsigned int minCodeCost = 9999999;
+  unsigned int minCodeCost = UINT_MAX;
   unsigned int maxCodeCost = 0;
-  unsigned int minCost = 9999999;
+  unsigned int minCost = UINT_MAX;
   unsigned int maxCost = 0;
 	unsigned int itemCost = 0;
   unsigned int playerTownComboCost = 0;
