@@ -16,7 +16,7 @@ TODO:
 A lot of these characters look like they can't be input ingame, need to check what can actually be used. Probably with a memory viewer.
 This would be much better if it just wrote out all the stats to a CSV, so I could analyze them post facto rather than assuming everything works perfectly
 Figure out how "generate multiple codes" works on the website and backport over here so I can get even more search space
-
+Parallelize with OpenMP (or maybe OpenMPI, I did like OpenMPI better)
 
 
 Original readme below:
