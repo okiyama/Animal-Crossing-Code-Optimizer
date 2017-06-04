@@ -21,11 +21,11 @@ ColdEggMan said that he only listed 500 codes because there's lot of stuff you g
 He also said that it should use universal codes because the player to player codes mostly don't work
 He said that the red items and yellow items are needed? Need to double check what he means
 Likely I'll want to just optimize for the 500 or so items in the route
-Cut down CSV to only player/townname combos. 1GB is too big.
 
 DONE:
 A lot of these characters look like they can't be input ingame, need to check what can actually be used. Probably with a memory viewer.
 This would be much better if it just wrote out all the stats to a CSV, so I could analyze them post facto rather than assuming everything works perfectly
+Cut down CSV to only player/townname combos. 1GB is too big.
 
 Original readme below:
 

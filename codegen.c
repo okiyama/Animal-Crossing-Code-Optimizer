@@ -219,7 +219,7 @@ int main( int argc, char **argv )
     printf("Error opening file\n");
     return 1;
   } else {
-      fprintf(csvOutput, "playername(int), townname(int), code, cost\n");
+      fprintf(csvOutput, "playername(int), townname(int), cost\n");
   }
 
 	unsigned int idx;
@@ -247,6 +247,7 @@ int main( int argc, char **argv )
 
   init_char_to_location();
 
+  unsigned int playerTownComboCost = 0;
   for(playeridx = 0; playeridx < NUM_VALID_CHARS; playeridx++) {
     playername[0] = validChars[playeridx];
     printf("Player %d of %d\n", playeridx, NUM_VALID_CHARS);
@@ -273,8 +274,11 @@ int main( int argc, char **argv )
         mMpswd_chg_common_font_code( finalcode );
 
         itemCost = calculate_item_cost(finalcode);
-        fprintf(csvOutput, "%d, %d, %s, %d\n", playername[0], townname[0], finalcode, itemCost);
+        playerTownComboCost += itemCost;
       }
+
+      fprintf(csvOutput, "%d, %d, %d\n", playername[0], townname[0], playerTownComboCost);
+      playerTownComboCost = 0;
     }
   }
 
