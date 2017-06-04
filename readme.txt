@@ -13,11 +13,19 @@ http://pastebin.com/TMyMNJ5P
 I'll put those files in this repository for safe keeping as well.
 
 TODO:
-A lot of these characters look like they can't be input ingame, need to check what can actually be used. Probably with a memory viewer.
-This would be much better if it just wrote out all the stats to a CSV, so I could analyze them post facto rather than assuming everything works perfectly
+Get a list of all items that might need to be input into Nook
 Figure out how "generate multiple codes" works on the website and backport over here so I can get even more search space
 Parallelize with OpenMP (or maybe OpenMPI, I did like OpenMPI better)
+Profile to see if it's my code that's slow or the generator itself
+ColdEggMan said that he only listed 500 codes because there's lot of stuff you get during play, like t-shirts from nook and tools and such. Sounds like he goes piecemeal to just fill in gaps
+He also said that it should use universal codes because the player to player codes mostly don't work
+He said that the red items and yellow items are needed? Need to double check what he means
+Likely I'll want to just optimize for the 500 or so items in the route
+Cut down CSV to only player/townname combos. 1GB is too big.
 
+DONE:
+A lot of these characters look like they can't be input ingame, need to check what can actually be used. Probably with a memory viewer.
+This would be much better if it just wrote out all the stats to a CSV, so I could analyze them post facto rather than assuming everything works perfectly
 
 Original readme below:
 
