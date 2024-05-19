@@ -21,6 +21,9 @@ ColdEggMan said that he only listed 500 codes because there's lot of stuff you g
 He also said that it should use universal codes because the player to player codes mostly don't work
 He said that the red items and yellow items are needed? Need to double check what he means
 Likely I'll want to just optimize for the 500 or so items in the route
+https://nookipedia.com/wiki/Secret_code#Types_of_codes - so it looks like what I should do is see which codes in the route are universal and which are contest codes and follow suit. Then the rest can be universal.
+So it looks like I'm actually looking to set the player and town name on the code itself, not for the player. Player name town name can stay as !/!. Additionally, on universal codes only the town name should be 1 character. It's fine for the player name to take as much room as needed.
+Also the hundo tracking program could be optimized with a better UI.
 
 DONE:
 A lot of these characters look like they can't be input ingame, need to check what can actually be used. Probably with a memory viewer.
