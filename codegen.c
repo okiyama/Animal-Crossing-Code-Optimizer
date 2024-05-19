@@ -248,6 +248,10 @@ int main( int argc, char **argv )
   init_char_to_location();
 
   unsigned int playerTownComboCost = 0;
+  unsigned int maxItemCost = 0;
+  char maxItem[29] = "";
+  unsigned int minItemCost = 99999;
+  char minItem[29] = "";
   for(playeridx = 0; playeridx < NUM_VALID_CHARS; playeridx++) {
     playername[0] = validChars[playeridx];
     printf("Player %d of %d\n", playeridx, NUM_VALID_CHARS);
@@ -275,11 +279,21 @@ int main( int argc, char **argv )
 
         itemCost = calculate_item_cost(finalcode);
         playerTownComboCost += itemCost;
+	if (itemCost > maxItemCost) {
+		maxItemCost = itemCost;
+		strcpy(maxItem, finalcode);
+	}
+	if (itemCost < minItemCost) {
+		minItemCost = itemCost;
+		strcpy(minItem, finalcode);
+	}
       }
 
       fprintf(csvOutput, "%d, %d, %d\n", playername[0], townname[0], playerTownComboCost);
       playerTownComboCost = 0;
     }
+
+    printf("Max cost: %d, max item: %s, min cost: %d, min item: %s\n", maxItemCost, maxItem, minItemCost, minItem);
   }
 
 	printf( "\n" );
